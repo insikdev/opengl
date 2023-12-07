@@ -1,7 +1,10 @@
-#include <iostream>
+#include "pch.h"
+#include "app.h"
 
 int main(void)
 {
-    std::cout << "hello\n";
+    SPDLOG_INFO("Start OpenGL Tutorial");
+    std::make_unique<App>()->Run();
+    SPDLOG_INFO("End OpenGL Tutorial");
     return 0;
 }
