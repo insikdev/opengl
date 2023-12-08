@@ -13,15 +13,15 @@ Wrapper::Buffer::~Buffer()
     if (m_buffer) {
         glDeleteBuffers(1, &m_buffer);
 
-        SPDLOG_INFO("Destroy Buffer");
+        SPDLOG_INFO("Destroy OpenGL Buffer - {}", m_buffer);
     }
 }
 
 void Wrapper::Buffer::CreateBuffer(const void* data, size_t dataSize)
 {
-    SPDLOG_INFO("Create Buffer");
-
     glGenBuffers(1, &m_buffer);
     glBindBuffer(m_type, m_buffer);
     glBufferData(m_type, dataSize, data, m_usage);
+
+    SPDLOG_INFO("Create OpenGL Buffer - {}", m_buffer);
 }

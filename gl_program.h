@@ -10,6 +10,8 @@ public:
 
 public:
     void Use() { glUseProgram(m_program); }
+    void SetUniform(const std::string& name, int value) const;
+    void SetUniform(const std::string& name, const glm::mat4& value) const;
 
 public: // getter
     uint32_t Get() { return m_program; }

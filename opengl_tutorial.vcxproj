@@ -146,8 +146,10 @@
     <ClCompile Include="gl_context.cpp" />
     <ClCompile Include="gl_program.cpp" />
     <ClCompile Include="gl_shader.cpp" />
+    <ClCompile Include="gl_texture.cpp" />
     <ClCompile Include="gl_vertex_layout.cpp" />
     <ClCompile Include="gl_window.cpp" />
+    <ClCompile Include="image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -155,12 +157,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
+    <ClInclude Include="geometry.h" />
     <ClInclude Include="gl_buffer.h" />
     <ClInclude Include="gl_context.h" />
     <ClInclude Include="gl_program.h" />
     <ClInclude Include="gl_shader.h" />
+    <ClInclude Include="gl_texture.h" />
     <ClInclude Include="gl_vertex_layout.h" />
     <ClInclude Include="gl_window.h" />
+    <ClInclude Include="image.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

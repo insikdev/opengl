@@ -11,14 +11,26 @@ Wrapper::Program::~Program()
 {
     if (m_program) {
         glDeleteProgram(m_program);
-        SPDLOG_INFO("Destroy OpenGL Program");
+        SPDLOG_INFO("Destroy OpenGL Program - {}", m_program);
     }
+}
+
+void Wrapper::Program::SetUniform(const std::string& name, int value) const
+{
+    auto loc = glGetUniformLocation(m_program, name.c_str());
+    glUniform1i(loc, value);
+}
+
+void Wrapper::Program::SetUniform(const std::string& name, const glm::mat4& value) const
+{
+    auto loc = glGetUniformLocation(m_program, name.c_str());
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Wrapper::Program::LinkShaders(const std::vector<Shader*>& shaders)
 {
     m_program = glCreateProgram();
-    SPDLOG_INFO("Create OpenGL Program");
+    SPDLOG_INFO("Create OpenGL Program - {}", m_program);
 
     for (auto& shader : shaders) {
         glAttachShader(m_program, shader->GetShader());

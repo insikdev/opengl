@@ -9,6 +9,7 @@ public:
         std::ifstream fin(filename);
 
         if (!fin.is_open()) {
+            SPDLOG_ERROR("Failed to open file : {} ", filename);
             throw std::runtime_error("Failed to open file : " + filename);
         }
 

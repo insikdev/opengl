@@ -6,7 +6,7 @@ public:
     ~VertexLayout();
 
 public:
-    void SetAttribute(uint32_t index, int count, uint32_t type, bool normalized, size_t stride, uint64_t offset);
+    void SetAttribute(uint32_t index, int count, uint32_t type, bool normalized, GLsizei stride, uint64_t offset);
 
 private:
     void CreateLayout();

@@ -36,5 +36,5 @@ void Wrapper::Shader::CreateShader(const std::string& filename, GLenum shaderTyp
         throw std::runtime_error("Failed to compile shader : " + filename);
     }
 
-    SPDLOG_INFO("Compile shader success : {}", filename);
+    SPDLOG_INFO("Compile shader : {}", filename);
 }
