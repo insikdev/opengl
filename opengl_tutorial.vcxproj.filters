@@ -11,6 +11,12 @@
     <None Include="shaders\simple.frag">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\light.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\light.frag">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="wrapper">

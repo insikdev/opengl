@@ -2,9 +2,15 @@
 #include "gl_program.h"
 #include "gl_shader.h"
 
-Wrapper::Program::Program(const std::vector<Shader*>& shaders)
+Wrapper::Program::Program(const std::string& vertexShaderFilename, const std::string& fragmentShaderFilename)
 {
-    LinkShaders(shaders);
+    auto p_vertexShader = new Wrapper::Shader { vertexShaderFilename, GL_VERTEX_SHADER };
+    auto p_fragmentShader = new Wrapper::Shader { fragmentShaderFilename, GL_FRAGMENT_SHADER };
+
+    LinkShaders({ p_vertexShader, p_fragmentShader });
+
+    delete p_vertexShader;
+    delete p_fragmentShader;
 }
 
 Wrapper::Program::~Program()
@@ -19,6 +25,24 @@ void Wrapper::Program::SetUniform(const std::string& name, int value) const
 {
     auto loc = glGetUniformLocation(m_program, name.c_str());
     glUniform1i(loc, value);
+}
+
+void Wrapper::Program::SetUniform(const std::string& name, float value) const
+{
+    auto loc = glGetUniformLocation(m_program, name.c_str());
+    glUniform1f(loc, value);
+}
+
+void Wrapper::Program::SetUniform(const std::string& name, const glm::vec3& value) const
+{
+    auto loc = glGetUniformLocation(m_program, name.c_str());
+    glUniform3fv(loc, 1, glm::value_ptr(value));
+}
+
+void Wrapper::Program::SetUniform(const std::string& name, const glm::vec4& value) const
+{
+    auto loc = glGetUniformLocation(m_program, name.c_str());
+    glUniform4fv(loc, 1, glm::value_ptr(value));
 }
 
 void Wrapper::Program::SetUniform(const std::string& name, const glm::mat4& value) const
