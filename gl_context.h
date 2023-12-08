@@ -59,11 +59,8 @@ private:
     Light m_light;
 
     struct Material {
-        // Texture* diffuse;
-        // Texture* specular;
-        glm::vec3 ambient { glm::vec3(0.1f, 0.1f, 0.1f) };
-        glm::vec3 diffuse { glm::vec3(0.5f, 0.5f, 0.5f) };
-        glm::vec3 specular { glm::vec3(1.0f, 1.0f, 1.0f) };
+        Texture* diffuse;
+        Texture* specular;
         float shininess { 32.0f };
     };
     Material m_material;

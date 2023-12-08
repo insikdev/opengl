@@ -150,11 +150,8 @@ void Wrapper::Context::Render(void)
     p_program->SetUniform("light.ambient", m_light.ambient);
     p_program->SetUniform("light.diffuse", m_light.diffuse);
     p_program->SetUniform("light.specular", m_light.specular);
-    // p_program->SetUniform("material.diffuse", 0);
-    // p_program->SetUniform("material.specular", 1);
-    p_program->SetUniform("material.ambient", m_material.ambient);
-    p_program->SetUniform("material.diffuse", m_material.diffuse);
-    p_program->SetUniform("material.specular", m_material.specular);
+    p_program->SetUniform("material.diffuse", 0);
+    p_program->SetUniform("material.specular", 1);
     p_program->SetUniform("material.shininess", m_material.shininess);
 
     for (size_t i = 0; i < cubePositions.size(); i++) {
@@ -192,9 +189,6 @@ void Wrapper::Context::Render(void)
             ImGui::ColorEdit3("l.specular", glm::value_ptr(m_light.specular));
         }
         if (ImGui::CollapsingHeader("material", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::ColorEdit3("m.ambient", glm::value_ptr(m_material.ambient));
-            ImGui::ColorEdit3("m.diffuse", glm::value_ptr(m_material.diffuse));
-            ImGui::ColorEdit3("m.specular", glm::value_ptr(m_material.specular));
             ImGui::DragFloat("m.shininess", &m_material.shininess, 1.0f, 1.0f, 256.0f);
         }
     }
@@ -257,6 +251,6 @@ void Wrapper::Context::LoadImages(void)
     delete image;
     delete image2;
 
-    // m_material.diffuse = p_texture1;
-    // m_material.specular = p_texture2;
+    m_material.diffuse = p_texture1;
+    m_material.specular = p_texture2;
 }
