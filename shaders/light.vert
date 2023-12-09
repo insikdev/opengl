@@ -10,12 +10,12 @@ uniform mat4 projection;
 
 out vec3 normal;
 out vec2 texCoord;
-out vec3 posWorld;
+out vec3 position;
 
 void main() {
 	gl_Position = projection * view * world * vec4(aPos, 1.0);
 
 	normal = (transpose(inverse(world)) * vec4(aNormal, 0.0)).xyz;
 	texCoord = aTexCoord;
-	posWorld = (world * vec4(aPos, 1.0)).xyz;
+	position = (world * vec4(aPos, 1.0)).xyz;
 }

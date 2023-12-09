@@ -148,9 +148,9 @@ void Wrapper::Context::Render(void)
     p_program->SetUniform("view", view);
     p_program->SetUniform("projection", projection);
     p_program->SetUniform("light.position", m_light.position);
-    p_program->SetUniform("light.position", m_light.position);
+    p_program->SetUniform("light.direction", m_light.direction);
+    p_program->SetUniform("light.cutoff", glm::vec2(cosf(glm::radians(m_light.cutoff[0])), cosf(glm::radians(m_light.cutoff[0] + m_light.cutoff[1]))));
     p_program->SetUniform("light.attenuation", Utils::GetAttenuationCoeff(m_light.distance));
-    // p_program->SetUniform("light.direction", m_light.direction);
     p_program->SetUniform("light.ambient", m_light.ambient);
     p_program->SetUniform("light.diffuse", m_light.diffuse);
     p_program->SetUniform("light.specular", m_light.specular);
@@ -188,7 +188,7 @@ void Wrapper::Context::Render(void)
 
         if (ImGui::CollapsingHeader("light")) {
             ImGui::DragFloat3("l.position", glm::value_ptr(m_light.position), 0.01f);
-            // ImGui::DragFloat3("l.direction", glm::value_ptr(m_light.direction), 0.01f);
+            ImGui::DragFloat3("l.direction", glm::value_ptr(m_light.direction), 0.01f);
             ImGui::ColorEdit3("l.ambient", glm::value_ptr(m_light.ambient));
             ImGui::ColorEdit3("l.diffuse", glm::value_ptr(m_light.diffuse));
             ImGui::ColorEdit3("l.specular", glm::value_ptr(m_light.specular));
