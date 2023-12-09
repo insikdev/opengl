@@ -8,9 +8,6 @@ Wrapper::Program::Program(const std::string& vertexShaderFilename, const std::st
     auto p_fragmentShader = new Wrapper::Shader { fragmentShaderFilename, GL_FRAGMENT_SHADER };
 
     LinkShaders({ p_vertexShader, p_fragmentShader });
-
-    delete p_vertexShader;
-    delete p_fragmentShader;
 }
 
 Wrapper::Program::~Program()
@@ -73,5 +70,6 @@ void Wrapper::Program::LinkShaders(const std::vector<Shader*>& shaders)
 
     for (auto& shader : shaders) {
         glDetachShader(m_program, shader->GetShader());
+        delete shader;
     }
 }

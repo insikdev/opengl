@@ -11,7 +11,8 @@ uniform sampler2D tex2;
 uniform vec3 viewPos;
 
 struct Light {
-	vec3 position;
+	// vec3 position;
+	vec3 direction;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
@@ -30,7 +31,8 @@ void main() {
 	vec3 texColor = texture(material.diffuse, texCoord).xyz;
 	vec3 ambient = texColor * light.ambient;
 	 
-	vec3 lightDir = normalize(light.position - posWorld);
+	// vec3 lightDir = normalize(light.position - posWorld);
+	vec3 lightDir = normalize(-light.direction);
 	vec3 pixelNorm = normalize(normal);
 	float diff = max(dot(pixelNorm, lightDir), 0.0);
 	vec3 diffuse = diff * texColor * light.diffuse;
