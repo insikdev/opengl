@@ -1,4 +1,5 @@
 #pragma once
+#include <stb_image.h>
 
 namespace Wrapper {
 class Shader;
@@ -9,7 +10,7 @@ public:
     ~Program();
 
 public:
-    void Use() { glUseProgram(m_program); }
+    void Use(void);
     void SetUniform(const std::string& name, int value) const;
     void SetUniform(const std::string& name, float value) const;
     void SetUniform(const std::string& name, const glm::vec2& value) const;

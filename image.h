@@ -3,7 +3,11 @@
 class Image {
 public:
     Image(const std::string&);
+    Image(int width, int height, int channelCount = 4);
     ~Image();
+
+public:
+    static Image* CreateSingleColorImage(int width, int height, const glm::vec4& color);
 
 public: // getter
     const uint8_t* GetData() const { return m_data; }

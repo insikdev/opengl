@@ -9,9 +9,14 @@ Wrapper::VertexLayout::VertexLayout()
 Wrapper::VertexLayout::~VertexLayout()
 {
     if (m_vertexArrayObject) {
-        SPDLOG_INFO("Destory Vertex Layout Object - {}", m_vertexArrayObject);
+        SPDLOG_INFO("Destory OpenGL VAO - {}", m_vertexArrayObject);
         glDeleteVertexArrays(1, &m_vertexArrayObject);
     }
+}
+
+void Wrapper::VertexLayout::Bind(void)
+{
+    glBindVertexArray(m_vertexArrayObject);
 }
 
 void Wrapper::VertexLayout::SetAttribute(uint32_t index, int count, uint32_t type, bool normalized, GLsizei stride, uint64_t offset)
@@ -23,7 +28,6 @@ void Wrapper::VertexLayout::SetAttribute(uint32_t index, int count, uint32_t typ
 void Wrapper::VertexLayout::CreateLayout()
 {
     glGenVertexArrays(1, &m_vertexArrayObject);
-    glBindVertexArray(m_vertexArrayObject);
-
-    SPDLOG_INFO("Create Vertex Layout Object - {}", m_vertexArrayObject);
+    Bind();
+    SPDLOG_INFO("Create OpenGL VAO - {}", m_vertexArrayObject);
 }

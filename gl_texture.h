@@ -9,6 +9,7 @@ public:
     ~Texture();
 
 public:
+    void Bind(void) const;
     void SetFilter(uint32_t minFilter, uint32_t magFilter) const;
     void SetWrap(uint32_t sWrap, uint32_t tWrap) const;
 
@@ -17,8 +18,5 @@ private:
 
 private:
     uint32_t m_texture {};
-
-private:
-    static uint32_t s_nums;
 };
 }

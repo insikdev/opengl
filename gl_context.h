@@ -1,11 +1,11 @@
 #pragma once
 
+class Mesh;
+class Model;
+
 namespace Wrapper {
 class Window;
 class Program;
-class Buffer;
-class VertexLayout;
-class Texture;
 
 class Context {
 public:
@@ -22,23 +22,22 @@ public:
 private:
     void CreateContext(void);
     void CreatePrograms(void);
-    void InitModel(void);
-    void LoadImages(void);
+    void CreateModels(void);
 
 private:
     const Window* p_window;
     Program* p_program;
     Program* p_simpleProgram;
-    VertexLayout* m_vertexLayout;
-    Buffer* m_vertexBuffer;
-    Buffer* m_indexBuffer;
-    Texture* p_texture1;
-    Texture* p_texture2;
     glm::vec4 m_clearColor { glm::vec4(0.1f, 0.2f, 0.3f, 0.0f) };
+
+private:
+    Mesh* m_box;
+    Model* m_model;
 
 private:
     ImGuiContext* m_ImGuiContext;
     bool m_animation { true };
+    bool m_flashLightMode { true };
 
 private: // camera
     glm::vec3 m_cameraPos { glm::vec3(0.0f, 0.0f, 3.0f) };
@@ -52,20 +51,13 @@ private: // camera
 private:
     struct Light {
         glm::vec3 position { glm::vec3(2.0f, 2.0f, 2.0f) };
-        glm::vec3 direction { glm::vec3(-0.2f, -1.0f, -0.3f) };
+        glm::vec3 direction { glm::vec3(-1.0f, -1.0f, -1.0f) };
         glm::vec2 cutoff { glm::vec2(20.0f, 5.0f) };
         float distance { 32.0f };
         glm::vec3 ambient { glm::vec3(0.1f, 0.1f, 0.1f) };
-        glm::vec3 diffuse { glm::vec3(0.5f, 0.5f, 0.5f) };
+        glm::vec3 diffuse { glm::vec3(0.8f, 0.8f, 0.8f) };
         glm::vec3 specular { glm::vec3(1.0f, 1.0f, 1.0f) };
     };
     Light m_light;
-
-    struct Material {
-        Texture* diffuse;
-        Texture* specular;
-        float shininess { 32.0f };
-    };
-    Material m_material;
 };
 }

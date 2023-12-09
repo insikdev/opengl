@@ -10,8 +10,8 @@ Wrapper::Shader::Shader(const std::string& filename, GLenum shaderType)
 Wrapper::Shader::~Shader()
 {
     if (m_shader) {
+        SPDLOG_INFO("Destroy OpenGL Shader - {}", m_shader);
         glDeleteShader(m_shader);
-        SPDLOG_INFO("Destory Shader");
     }
 }
 
@@ -36,5 +36,5 @@ void Wrapper::Shader::CreateShader(const std::string& filename, GLenum shaderTyp
         throw std::runtime_error("Failed to compile shader : " + filename);
     }
 
-    SPDLOG_INFO("Compile shader : {}", filename);
+    SPDLOG_INFO("Create OpenGL Shader - {} : {}", m_shader, filename);
 }

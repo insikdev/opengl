@@ -9,10 +9,9 @@ Wrapper::Window::Window(const char* title)
 
 Wrapper::Window::~Window()
 {
+    SPDLOG_INFO("Destroy GLFW");
     glfwDestroyWindow(m_window);
     glfwTerminate();
-
-    SPDLOG_INFO("Destory GLFW");
 }
 
 bool Wrapper::Window::ShouldClose(void)
@@ -22,8 +21,6 @@ bool Wrapper::Window::ShouldClose(void)
 
 void Wrapper::Window::CreateGLFW(void)
 {
-    SPDLOG_INFO("Create GLFW");
-
     if (!glfwInit()) {
         throw std::runtime_error("Failed to init GLFW");
     }
@@ -34,4 +31,6 @@ void Wrapper::Window::CreateGLFW(void)
 
     m_window = glfwCreateWindow(m_width, m_height, m_title, nullptr, nullptr);
     assert(m_window != nullptr);
+
+    SPDLOG_INFO("Create GLFW");
 }

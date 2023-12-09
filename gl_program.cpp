@@ -13,9 +13,14 @@ Wrapper::Program::Program(const std::string& vertexShaderFilename, const std::st
 Wrapper::Program::~Program()
 {
     if (m_program) {
-        glDeleteProgram(m_program);
         SPDLOG_INFO("Destroy OpenGL Program - {}", m_program);
+        glDeleteProgram(m_program);
     }
+}
+
+void Wrapper::Program::Use(void)
+{
+    glUseProgram(m_program);
 }
 
 void Wrapper::Program::SetUniform(const std::string& name, int value) const
@@ -57,7 +62,6 @@ void Wrapper::Program::SetUniform(const std::string& name, const glm::mat4& valu
 void Wrapper::Program::LinkShaders(const std::vector<Shader*>& shaders)
 {
     m_program = glCreateProgram();
-    SPDLOG_INFO("Create OpenGL Program - {}", m_program);
 
     for (auto& shader : shaders) {
         glAttachShader(m_program, shader->GetShader());
@@ -78,4 +82,6 @@ void Wrapper::Program::LinkShaders(const std::vector<Shader*>& shaders)
         glDetachShader(m_program, shader->GetShader());
         delete shader;
     }
+
+    SPDLOG_INFO("Create OpenGL Program - {}", m_program);
 }

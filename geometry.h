@@ -2,12 +2,6 @@
 
 #include "pch.h"
 
-struct Vertex {
-    glm::vec3 pos;
-    glm::vec3 normal;
-    glm::vec2 texCoord;
-};
-
 struct MeshData {
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;

@@ -63,6 +63,15 @@
     <ClCompile Include="gl_texture.cpp">
       <Filter>wrapper</Filter>
     </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="material.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h">
@@ -99,6 +108,15 @@
       <Filter>wrapper</Filter>
     </ClInclude>
     <ClInclude Include="geometry.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="material.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

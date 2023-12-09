@@ -2,20 +2,18 @@
 #include "gl_context.h"
 #include "gl_window.h"
 #include "gl_program.h"
-#include "gl_buffer.h"
-#include "gl_vertex_layout.h"
 #include "image.h"
 #include "gl_texture.h"
-#include "geometry.h"
 #include "utils.h"
+#include "mesh.h"
+#include "model.h"
 
 Wrapper::Context::Context(const Window* pWindow)
     : p_window { pWindow }
 {
     CreateContext();
     CreatePrograms();
-    LoadImages();
-    InitModel();
+    CreateModels();
 
     glClearColor(m_clearColor.x, m_clearColor.y, m_clearColor.z, m_clearColor.w); // set clear color
     glEnable(GL_DEPTH_TEST);
@@ -29,13 +27,12 @@ Wrapper::Context::~Context()
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext(m_ImGuiContext);
 
-    delete p_texture1;
-    delete p_texture2;
-    delete m_vertexLayout;
-    delete m_vertexBuffer;
-    delete m_indexBuffer;
+    delete m_model;
+    delete m_box;
     delete p_simpleProgram;
     delete p_program;
+
+    SPDLOG_INFO("Destroy OpenGL Context");
 }
 
 void Wrapper::Context::HandleInput()
@@ -44,7 +41,7 @@ void Wrapper::Context::HandleInput()
         return;
     }
 
-    const float cameraSpeed = 0.05f;
+    const float cameraSpeed = 0.005f;
     if (glfwGetKey(p_window->GetGLFWwindow(), GLFW_KEY_W) == GLFW_PRESS) {
         m_cameraPos += cameraSpeed * m_cameraFront;
     }
@@ -114,19 +111,6 @@ void Wrapper::Context::MouseButton(int button, int action, double x, double y)
 
 void Wrapper::Context::Render(void)
 {
-    std::vector<glm::vec3> cubePositions = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(2.0f, 5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f, 3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f, 2.0f, -2.5f),
-        glm::vec3(1.5f, 0.2f, -1.5f),
-        glm::vec3(-1.3f, 1.0f, -1.5f),
-    };
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear frame buffer
 
     m_cameraFront = glm::rotate(glm::mat4(1.0f), glm::radians(m_cameraYaw), glm::vec3(0.0f, 1.0f, 0.0f))
@@ -136,37 +120,37 @@ void Wrapper::Context::Render(void)
     auto view = glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
     auto projection = glm::perspective(glm::radians(45.0f), p_window->GetAspectRatio(), 0.01f, 50.0f);
 
-    { // simple program for light
+    glm::vec3 lightPos = m_light.position;
+    glm::vec3 lightDir = m_light.direction;
+
+    if (m_flashLightMode) {
+        lightPos = m_cameraPos;
+        lightDir = m_cameraFront;
+    } else {
+        // simple program for light
         auto lightModelTransform = glm::translate(glm::mat4(1.0), m_light.position) * glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
         p_simpleProgram->Use();
         p_simpleProgram->SetUniform("color", glm::vec4(m_light.ambient + m_light.diffuse, 1.0f));
         p_simpleProgram->SetUniform("transform", projection * view * lightModelTransform);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        m_box->Draw(p_simpleProgram);
     }
 
+    // model
+    auto world = glm::mat4(1.0f);
     p_program->Use();
+    p_program->SetUniform("world", world);
     p_program->SetUniform("view", view);
     p_program->SetUniform("projection", projection);
-    p_program->SetUniform("light.position", m_light.position);
-    p_program->SetUniform("light.direction", m_light.direction);
+    p_program->SetUniform("viewPos", m_cameraPos);
+    p_program->SetUniform("light.position", lightPos);
+    p_program->SetUniform("light.direction", lightDir);
     p_program->SetUniform("light.cutoff", glm::vec2(cosf(glm::radians(m_light.cutoff[0])), cosf(glm::radians(m_light.cutoff[0] + m_light.cutoff[1]))));
     p_program->SetUniform("light.attenuation", Utils::GetAttenuationCoeff(m_light.distance));
     p_program->SetUniform("light.ambient", m_light.ambient);
     p_program->SetUniform("light.diffuse", m_light.diffuse);
     p_program->SetUniform("light.specular", m_light.specular);
-    p_program->SetUniform("material.diffuse", 0);
-    p_program->SetUniform("material.specular", 1);
-    p_program->SetUniform("material.shininess", m_material.shininess);
 
-    for (size_t i = 0; i < cubePositions.size(); i++) {
-        auto& pos = cubePositions[i];
-        auto model = glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-        auto angle = glm::radians((m_animation ? (float)glfwGetTime() * 120.0f : 0.0f) + 20.0f * (float)i);
-        model = glm::rotate(model, angle, glm::vec3(1.0f, 0.5f, 0.0f));
-
-        p_program->SetUniform("world", model);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-    }
+    m_model->Draw(p_program);
 
     // ImGui
     if (ImGui::Begin("ui window")) {
@@ -192,9 +176,7 @@ void Wrapper::Context::Render(void)
             ImGui::ColorEdit3("l.ambient", glm::value_ptr(m_light.ambient));
             ImGui::ColorEdit3("l.diffuse", glm::value_ptr(m_light.diffuse));
             ImGui::ColorEdit3("l.specular", glm::value_ptr(m_light.specular));
-        }
-        if (ImGui::CollapsingHeader("material", ImGuiTreeNodeFlags_DefaultOpen)) {
-            ImGui::DragFloat("m.shininess", &m_material.shininess, 1.0f, 1.0f, 256.0f);
+            ImGui::Checkbox("l.flash", &m_flashLightMode);
         }
     }
     ImGui::End();
@@ -214,7 +196,7 @@ void Wrapper::Context::CreateContext(void)
     }
 
     auto glVersion = glGetString(GL_VERSION);
-    SPDLOG_INFO("Create OpenGL context - version : {}", (const char*)glVersion);
+    SPDLOG_INFO("Create OpenGL Context - version : {}", (const char*)glVersion);
 
     m_ImGuiContext = ImGui::CreateContext();
     ImGui::SetCurrentContext(m_ImGuiContext);
@@ -231,31 +213,8 @@ void Wrapper::Context::CreatePrograms(void)
     p_program = new Wrapper::Program { "shaders/light.vert", "shaders/light.frag" };
 }
 
-void Wrapper::Context::InitModel(void)
+void Wrapper::Context::CreateModels(void)
 {
-    auto mesh = Geometry::CreateCube();
-
-    m_vertexLayout = new VertexLayout {};
-    m_vertexBuffer = new Buffer { GL_ARRAY_BUFFER, GL_STATIC_DRAW, mesh.vertices.data(), sizeof(Vertex) * mesh.vertices.size() };
-
-    m_vertexLayout->SetAttribute(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    m_vertexLayout->SetAttribute(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, normal));
-    m_vertexLayout->SetAttribute(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, texCoord));
-
-    m_indexBuffer = new Buffer { GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, mesh.indices.data(), sizeof(uint32_t) * mesh.indices.size() };
-}
-
-void Wrapper::Context::LoadImages(void)
-{
-    Image* image = new Image { "images/container2.png" };
-    p_texture1 = new Texture { image };
-
-    Image* image2 = new Image { "images/container2_specular.png" };
-    p_texture2 = new Texture { image2 };
-
-    delete image;
-    delete image2;
-
-    m_material.diffuse = p_texture1;
-    m_material.specular = p_texture2;
+    m_box = Mesh::CreateCube();
+    m_model = new Model { "model/backpack.obj" };
 }

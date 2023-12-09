@@ -2,8 +2,6 @@
 #include "gl_texture.h"
 #include "image.h"
 
-uint32_t Wrapper::Texture::s_nums = 0;
-
 Wrapper::Texture::Texture(const Image* pImage)
 {
     CreateTexture(pImage);
@@ -12,9 +10,14 @@ Wrapper::Texture::Texture(const Image* pImage)
 Wrapper::Texture::~Texture()
 {
     if (m_texture) {
+        SPDLOG_INFO("Destroy OpenGL Texture - {}", m_texture);
         glDeleteTextures(1, &m_texture);
-        SPDLOG_INFO("Destory OpenGL Texture - {}", m_texture);
     }
+}
+
+void Wrapper::Texture::Bind(void) const
+{
+    glBindTexture(GL_TEXTURE_2D, m_texture);
 }
 
 void Wrapper::Texture::SetFilter(uint32_t minFilter, uint32_t magFilter) const
@@ -32,8 +35,7 @@ void Wrapper::Texture::SetWrap(uint32_t sWrap, uint32_t tWrap) const
 void Wrapper::Texture::CreateTexture(const Image* pImage)
 {
     glGenTextures(1, &m_texture);
-    glActiveTexture(GL_TEXTURE0 + s_nums++);
-    glBindTexture(GL_TEXTURE_2D, m_texture);
+    Bind();
 
     SetFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
     SetWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
@@ -57,4 +59,5 @@ void Wrapper::Texture::CreateTexture(const Image* pImage)
     glGenerateMipmap(GL_TEXTURE_2D);
 
     SPDLOG_INFO("Create OpenGL Texture - {}", m_texture);
+    delete pImage;
 }
