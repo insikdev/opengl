@@ -7,6 +7,7 @@
 #include "image.h"
 #include "gl_texture.h"
 #include "geometry.h"
+#include "utils.h"
 
 Wrapper::Context::Context(const Window* pWindow)
     : p_window { pWindow }
@@ -136,18 +137,20 @@ void Wrapper::Context::Render(void)
     auto projection = glm::perspective(glm::radians(45.0f), p_window->GetAspectRatio(), 0.01f, 50.0f);
 
     { // simple program for light
-      // auto lightModelTransform = glm::translate(glm::mat4(1.0), m_light.position) * glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
-      // p_simpleProgram->Use();
-      // p_simpleProgram->SetUniform("color", glm::vec4(m_light.ambient + m_light.diffuse, 1.0f));
-      // p_simpleProgram->SetUniform("transform", projection * view * lightModelTransform);
-      // glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        auto lightModelTransform = glm::translate(glm::mat4(1.0), m_light.position) * glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
+        p_simpleProgram->Use();
+        p_simpleProgram->SetUniform("color", glm::vec4(m_light.ambient + m_light.diffuse, 1.0f));
+        p_simpleProgram->SetUniform("transform", projection * view * lightModelTransform);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     }
 
     p_program->Use();
     p_program->SetUniform("view", view);
     p_program->SetUniform("projection", projection);
-    // p_program->SetUniform("light.position", m_light.position);
-    p_program->SetUniform("light.direction", m_light.direction);
+    p_program->SetUniform("light.position", m_light.position);
+    p_program->SetUniform("light.position", m_light.position);
+    p_program->SetUniform("light.attenuation", Utils::GetAttenuationCoeff(m_light.distance));
+    // p_program->SetUniform("light.direction", m_light.direction);
     p_program->SetUniform("light.ambient", m_light.ambient);
     p_program->SetUniform("light.diffuse", m_light.diffuse);
     p_program->SetUniform("light.specular", m_light.specular);
@@ -184,8 +187,8 @@ void Wrapper::Context::Render(void)
         }
 
         if (ImGui::CollapsingHeader("light")) {
-            // ImGui::DragFloat3("l.position", glm::value_ptr(m_light.position), 0.01f);
-            ImGui::DragFloat3("l.direction", glm::value_ptr(m_light.direction), 0.01f);
+            ImGui::DragFloat3("l.position", glm::value_ptr(m_light.position), 0.01f);
+            // ImGui::DragFloat3("l.direction", glm::value_ptr(m_light.direction), 0.01f);
             ImGui::ColorEdit3("l.ambient", glm::value_ptr(m_light.ambient));
             ImGui::ColorEdit3("l.diffuse", glm::value_ptr(m_light.diffuse));
             ImGui::ColorEdit3("l.specular", glm::value_ptr(m_light.specular));

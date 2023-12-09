@@ -11,8 +11,9 @@ uniform sampler2D tex2;
 uniform vec3 viewPos;
 
 struct Light {
-	// vec3 position;
-	vec3 direction;
+	vec3 position;
+	vec3 attenuation;
+	// vec3 direction;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
@@ -31,8 +32,14 @@ void main() {
 	vec3 texColor = texture(material.diffuse, texCoord).xyz;
 	vec3 ambient = texColor * light.ambient;
 	 
-	// vec3 lightDir = normalize(light.position - posWorld);
-	vec3 lightDir = normalize(-light.direction);
+	//vec3 lightDir = normalize(light.position - posWorld);
+	// vec3 lightDir = normalize(-light.direction);
+
+	float dist = length(light.position - posWorld);
+	vec3 distPoly = vec3(1.0, dist, dist*dist);
+	float attenuation = 1.0 / dot(distPoly, light.attenuation);
+
+	vec3 lightDir = (light.position - posWorld) / dist;
 	vec3 pixelNorm = normalize(normal);
 	float diff = max(dot(pixelNorm, lightDir), 0.0);
 	vec3 diffuse = diff * texColor * light.diffuse;
@@ -41,7 +48,7 @@ void main() {
 	vec3 viewDir = normalize(viewPos - posWorld);
 	vec3 reflectDir = reflect(-lightDir, pixelNorm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specular = spec * specColor * light.specular;
+	vec3 specular = (spec * specColor * light.specular) * attenuation;
  
 	vec3 result = ambient + diffuse + specular;
 	fragColor = vec4(result, 1.0);
